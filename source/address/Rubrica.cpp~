@@ -1,0 +1,81 @@
+#include "Rubrica.h"
+#include "Contact.h"
+#include <QObject>
+#include <QWidget>
+#include <QPushButton>
+#include <QLabel>
+#include <QLineEdit>
+#include <QLayout>
+#include <QFormLayout>
+#include <QMessageBox>
+#include <QVector>
+#include <QTableView>
+#include <QtSql/QSqlQuery>
+#include <QtSql/QSqlTableModel>
+#include <map>
+#include <algorithm>
+#include "ListWidget.h"
+#include "SearchWidget.h"
+#include "ContactWidget.h"
+#include "AddWidget.h"
+
+void Rubrica::addContact(){
+AddWidget* widget = new AddWidget(this);
+widget->show();
+}
+
+void Rubrica::searchContact(void){
+   SearchWidget* widget = new SearchWidget(this);
+   widget->show();
+}
+
+
+int Rubrica::search(QString name, QString surname){
+ bool found;
+ QString nameTarget, surnameTarget;
+ int i = 0;
+ found = false;
+ while(i< _counter && found == false){
+     nameTarget = _vector[i].getName();
+     surnameTarget = _vector[i].getSurname();
+     if(nameTarget== name)
+         if(surnameTarget== surname){
+            found = true;
+        }
+ i = i+1;
+}
+ if(found == true){
+     return (i - 1);
+}
+ return -1;
+}
+
+
+void Rubrica::stampContacts(){
+ ListWidget* widget = new ListWidget(this);
+ widget->show();
+}
+
+
+void Rubrica::clearAll(){
+    for(int i =0; i<_counter; i++)
+        _vector.erase(i);
+}
+
+
+
+Rubrica::Rubrica(){
+    _counter = 0;
+}
+
+Rubrica::~Rubrica(){
+    _vector.clear();
+}
+
+void Rubrica::incCounter(){
+    _counter = _counter + 1;
+}
+
+
+
+#include "Rubrica.moc"

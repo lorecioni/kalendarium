@@ -1,0 +1,115 @@
+#include <QPushButton>
+#include <QLineEdit>
+#include <QLabel>
+#include <map>
+#include <algorithm>
+#include <QObject>
+#include <QWidget>
+#include <QFormLayout>
+#include <QVBoxLayout>
+#include <QString>
+#include <QListWidget>
+#include <QListWidgetItem>
+#include <QSpacerItem>
+#include <QLineEdit>
+#include <QLabel>
+#include <QMessageBox>
+#include <QScrollBar>
+#include "ListWidget.h"
+#include "Rubrica.h"
+#include "ContactWidget.h"
+#include <QList>
+#include <QMessageBox>
+
+ListWidget::ListWidget(Rubrica* rubrica, QWidget* parent){
+
+    QString name, surname;
+
+    resize(400, 250);
+    setWindowTitle("List contacts");
+
+    _list = new QListWidget(this);
+    _scrollBar = new QScrollBar(this);
+    _layout = new QFormLayout(this);
+    _vLayout = new QVBoxLayout(this);
+    _quit = new QPushButton("Quit", this);
+    _showContact = new QPushButton("Show contact", this);
+    _selectedList = new QList<QListWidgetItem*>;
+    _rubrica = rubrica;
+
+    //Setting window layout
+    _vLayout->addWidget(_showContact);
+    _vLayout->addWidget(_quit);
+    _layout->addRow(_list, _vLayout);
+    setLayout(_layout);
+
+
+    _scrollBar->setMaximum(rubrica->_counter);
+    _scrollBar->show();
+    _list->setVerticalScrollBar(_scrollBar);
+    _list->setSortingEnabled(true);
+
+
+    for(int i = 0; i<(rubrica->_counter); i++){
+        name = rubrica->_vector[i].getName();
+        surname = rubrica->_vector[i].getSurname();
+
+        _list->addItem(new QListWidgetItem((name + " " + surname)));
+    }
+
+    QObject::connect(_list, SIGNAL(itemSelectionChanged()), this, SLOT(setSelection()));
+    QObject::connect(_showContact, SIGNAL(clicked()), this, SLOT(showContact()));
+    QObject::connect(_showContact, SIGNAL(clicked()), this, SLOT(updateList()));
+    QObject::connect(_quit, SIGNAL(clicked()), this, SLOT(close()));
+
+}
+
+
+void ListWidget::setSelection(){
+    QString tmp;
+    QStringList tmpList;
+
+    *(_selectedList) = _list->selectedItems();
+   tmp = (*(_selectedList->first())).text();
+
+   tmpList = tmp.split(" ");
+   _name = tmpList.first();
+   _surname = tmpList.last();
+
+   _id = _rubrica->search(_name, _surname);
+}
+
+void ListWidget::showContact(){
+
+    QMessageBox* error = new QMessageBox;
+
+    if(_name!= "" || _surname!= ""){
+    ContactWidget* widget = new ContactWidget(_rubrica, _id);
+    widget->show();
+    }
+    else{
+        error->setText("Any selected item!");
+        error->setWindowTitle("Error");
+        error->setIcon(QMessageBox::Critical);
+        error->exec();
+    }
+}
+
+
+/*void ListWidget::updateList(){
+    QString name, surname;
+
+    _list->clear();
+
+    for(int i = 0; i<(_rubrica->_counter); i++){
+        name = _rubrica->_vector[i].getName();
+        surname = _rubrica->_vector[i].getSurname();
+
+        _list->addItem(new QListWidgetItem((name + " " + surname)));
+    }
+}
+*/
+
+
+
+#include "ListWidget.moc"
