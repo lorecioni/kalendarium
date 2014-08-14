@@ -1,6 +1,11 @@
 Kalendarium
 ===========
 
-Calendario elettronico con interfaccia grafica scritto con le librerie C++ Qt 4.7. Elaborato Laboratorio Tecnologie dell'Informazione
+Personal calendar application written in C++ with Qt 4.7 libraries for Windows OS.
 
-Sono incluse le librerie .dll per Windows.
+- Personal contact list
+- Add and remove events
+- Binds events to contacts
+- Reminders
+
+Released with installer.
